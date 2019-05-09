@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello MainController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+
+    This friendly message is coming from:
+
+    <a href="https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=862fzqxix51y54&client_secret=LMz2TwFjy0QygNCe&scope=r_liteprofile%20r_emailaddress%20w_member_social&redirect_uri=http://127.0.0.1:8000/post
+">LinkedIn</a>
+    <ul>
+        <li>Your controller at <code><a href="{{ '/var/www/html/publish-on-api/src/Controller/MainController.php'|file_link(0) }}">src/Controller/MainController.php</a></code></li>
+        <li>Your template at <code><a href="{{ '/var/www/html/publish-on-api/templates/main/index.html.twig'|file_link(0) }}">templates/main/index.html.twig</a></code></li>
+    </ul>
+</div>
+{% endblock %}
