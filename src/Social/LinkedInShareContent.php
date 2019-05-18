@@ -3,12 +3,10 @@
 
 namespace App\Social;
 
-
 use GuzzleHttp\Client;
-use GuzzleHttp\RequestOptions;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class LinkedInShareContent
+class LinkedInShareContent implements ShareContentInterface
 {
     private const URL = 'https://api.linkedin.com/v2/ugcPosts';
 
@@ -24,9 +22,8 @@ class LinkedInShareContent
     }
 
 
-    public function postContent(string $message)
+    public function postContent(string $message): void
     {
-
         $body = $this->serializer->serialize($this->getBody($message), 'json');
 
         $client = new Client();
@@ -34,12 +31,11 @@ class LinkedInShareContent
             [
                 'headers' => ['Authorization' => 'Bearer '.$this->linkedInToken, 'X-Restli-Protocol-Version' => '2.0.0'],
                 'body' => $body,
-                'debug'   => true
 
         ]);
     }
 
-    public function getBody(string $message): array
+    public function getBody(string $message)
     {
         return
             [
@@ -54,5 +50,10 @@ class LinkedInShareContent
                             ],
                  "visibility" => ["com.linkedin.ugc.MemberNetworkVisibility" => "PUBLIC"]
             ];
+    }
+
+    public function support(string $media): bool
+    {
+        return $media == 'linkedin';
     }
 }

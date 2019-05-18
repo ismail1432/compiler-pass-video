@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Social\LinkedInShareContent;
+use App\Form\SocialMediaType;
+use App\Social\SocialNetworkInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,24 +13,21 @@ class MainController extends AbstractController
     /**
      * @Route("/main", name="main")
      */
-    public function index(LinkedInShareContent $shareContent)
+    public function index(SocialNetworkInterface $socialNetwork, Request $request)
     {
-        $shareContent->postContent("Test From LinkedIn API a new tuto about complier pass with Symfony will appear... #VersSymfonyEtAuDelà !!");
+        $form = $this->createForm(SocialMediaType::class);
 
+        if($form->handleRequest($request)->isSubmitted() && $form->isValid()) {
+
+            $content = $form->get('content')->getData();
+
+            $media = $form->getClickedButton()->getName();
+
+            $socialNetwork->postContent($content, $media);
+        }
 
         return $this->render('main/index.html.twig', [
-            'controller_name' => 'MainController',
-        ]);
-    }
-
-    /**
-     * @Route("/post", name="post")
-     */
-    public function post(Request $request)
-    {
-        dd($request);
-        return $this->render('main/index.html.twig', [
-            'controller_name' => 'MainController',
+            'form' => $form->createView()
         ]);
     }
 }

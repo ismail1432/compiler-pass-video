@@ -2,14 +2,18 @@
 
 namespace App;
 
+use App\Social\SocialNetworkInterface;
+use App\Social\SocialNetworkSender;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 use Symfony\Component\Routing\RouteCollectionBuilder;
 
-class Kernel extends BaseKernel
+class Kernel extends BaseKernel implements CompilerPassInterface
 {
     use MicroKernelTrait;
 
@@ -49,5 +53,22 @@ class Kernel extends BaseKernel
         $routes->import($confDir.'/{routes}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}/*'.self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS, '/', 'glob');
+    }
+
+    public function process(ContainerBuilder $container)
+    {
+        $container->registerForAutoconfiguration(SocialNetworkInterface::class);
+
+        if(!$container->get(SocialNetworkInterface::class)) {
+            return;
+        }
+
+        $definition = $container->findDefinition(SocialNetworkInterface::class);
+
+        $taggedServices = $container->findTaggedServiceIds('social_network');
+
+        foreach ($taggedServices as $socialNetwork => $id) {
+            $definition->addMethodCall('addSocialNetworkSenders', [new Reference($socialNetwork)]);
+        }
     }
 }
